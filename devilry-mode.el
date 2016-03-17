@@ -45,7 +45,7 @@
 ;; This is kind of horrible
 (defun dm-show-readme()
   (dolist (buf (buffer-list))
-    (when (string= (downcase (buffer-name buf)) "readme.txt")
+    (when (eq (string-match "^readme" (buffer-name buf)) 0)
       (switch-to-buffer buf)
       (return))))
 
