@@ -37,25 +37,29 @@
       (devilry-correct-student (car (car current-files-and-attributes)))
       )))
 
+
 ;; consider implementing file-name-sans-extension to check for filetype
 (defun directory-contains-filetype (filetype directory)
   (message "directory-contains-filetype")
-  (let (ret-val)
-    (dolist (dir (directory-files-and-attributes directory) ret-val)
-      (unless (eq (substring (car dir) 0 1) ".")
-        (message "is a ..")
-        (message (car dir))
-        (message (file-name-extension (car dir))))
-      (when (eq "zip" (file-name-extension (car dir)))
-        (message "here we should unzip the directory!")
-        (message dir)
+  (let (ret-val
+        dir-file-name
+        is-file-p)
+    (dolist (dir/file (directory-files-and-attributes directory) ret-val)
+      (message "in ze loop")
+      (setq dir-file-name (car dir/file))
+      (setq is-file-p (car (cdr dir/file)))
+      (unless (string= "." (substring dir-file-name 0 1))
+        (when (string= "zip" (file-name-extension dir-file-name))
+          (message "we should now unzip")
+          )
+        (when (string= filetype (file-name-extension dir-file-name))
+          (setq ret-val t))
         )
-      (when (string-match-p (concat filetype "$") (car dir))
-        (message "Found a %s filetype!" filetype)
-        (setq ret-val t))
-      ))
+      )
+    )
   )
 
+(message "-------")
 
 (defun open-all-files-in-directory()
   "Opens all files in current directory "
