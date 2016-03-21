@@ -15,6 +15,8 @@
 ;; Check if directory has .java files, if not. recurse down a dir
 ;; only check the top buffer, after we've sorted, and excluded .-buffers
 (defun devilry-correct-student (directory)
+  "Corrects the student associated with directory"
+  (interactive "DDirectory to correct:")
   (message "The directory passed in is: %s" directory)
   (let ((current-files-and-attributes (directory-files-and-attributes directory t)))
     ;; reverse the list, so that the last delivery is handled first.
@@ -27,20 +29,37 @@
     (message (car (car current-files-and-attributes)))
     ;; Now at the first non . file. Check if it's a dir
     (if (directory-contains-filetype ".java" (car (car current-files-and-attributes)))
-        (message "We are in the correct directory to correct the assignments!")
+        (cond
+         (t (message "in the right directory to correct files"))
+         (t (open-all-files-in-directory))
+         )
       (message "there are no assignments here, we should move on deeper!")
       (devilry-correct-student (car (car current-files-and-attributes)))
       )))
 
-
+;; consider implementing file-name-sans-extension to check for filetype
 (defun directory-contains-filetype (filetype directory)
   (message "directory-contains-filetype")
-  (dolist (dir (directory-files directory) ret-val)
-    (message (concat "$" filetype))
-    (when (string-match-p (concat filetype "$") dir)
-      (message "Found a %s filetype!" filetype)
-      (setq ret-val t))
-    )
-  ret-val)
+  (let (ret-val)
+    (dolist (dir (directory-files directory) ret-val)
+      (when (string-match-p (concat filetype "$") dir)
+        (message "Found a %s filetype!" filetype)
+        (setq ret-val t))
+      ))
+  )
+
+
+(defun open-all-files-in-directory()
+  "Opens all files in current directory "
+  (let ((dir-files (directory-files-and-attributes ".")))
+    (dolist (f dir-files)
+      (message (substring (car f) 0 1))
+      (unless (eq "." (substring (car f) 0 1))
+        (unless (car (cdr f))
+          (message (car f))
+          (find-file (car f))))))
+   )
+
+(open-all-files-in-directory)
 
 
