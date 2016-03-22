@@ -37,10 +37,15 @@
       (devilry-correct-student (car (car current-files-and-attributes)))
       )))
 
-
+;; pwd | sed 's/ /\\ \\/g                                               '| sed 's/\=/\\=/' | sed 's/)/\\)/g'
+;; final command
+;; pwd | sed 's/ /\\ \\/g
+'| sed 's/\=/\\=/' | sed 's/)/\\)/g' | cd; unzip *.zip -d .
+;; the command used for getting the proper directory-path
 ;; consider implementing file-name-sans-extension to check for filetype
 (defun directory-contains-filetype (filetype directory)
   (message "directory-contains-filetype")
+  (message directory)
   (let (ret-val
         dir-file-name
         is-file-p)
@@ -51,13 +56,24 @@
       (unless (string= "." (substring dir-file-name 0 1))
         (when (string= "zip" (file-name-extension dir-file-name))
           (message "we should now unzip")
-          )
-        (when (string= filetype (file-name-extension dir-file-name))
+          (let (dm-shellcommand)
+            (setq dm-shellcommand (format "bash /Users/olepetter/CodeFoo/lisp/projects/devilry-mode/unzip_to_current_folder.bash '%s'" (concat directory "/" dir-file-name)))
+            (message "The shell command -----")
+            (message dm-shellcommand)
+          (message "---- finished the shell command")
+          (call-process-shell-command dm-shellcommand nil (current-buffer) t)
+          (when (string= filetype (file-name-extension dir-file-name))
           (setq ret-val t))
+        ))
         )
       )
     )
   )
+
+
+
+(get-buffer-create "*Test*")
+(call-process-shell-command "bash unzip_to_current_folder.bash /Users/olepetter/CodeFoo/lisp/projects/devilry-mode/test.zip" nil (get-buffer-create "*test") t)
 
 (message "-------")
 
@@ -73,5 +89,8 @@
    )
 
 (open-all-files-in-directory)
+
+(shell-command "unzip test.zip")
+(shell-command "cd ~/Downloads")
 
 
