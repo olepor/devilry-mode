@@ -34,18 +34,21 @@
          (t (open-all-files-in-directory))
          )
       (message "there are no assignments here, we should move on deeper!")
-      (devilry-correct-student (car (car current-files-and-attributes)))
+      (when (car (cdr (car current-files-and-attributes)))
+        (message "--- this is a proper directory")
+        (devilry-correct-student (car (car current-files-and-attributes))))
       )))
 
 ;; pwd | sed 's/ /\\ \\/g                                               '| sed 's/\=/\\=/' | sed 's/)/\\)/g'
 ;; final command
 ;; pwd | sed 's/ /\\ \\/g
-'| sed 's/\=/\\=/' | sed 's/)/\\)/g' | cd; unzip *.zip -d .
+;;'| sed 's/\=/\\=/' | sed 's/)/\\)/g' | cd; unzip *.zip -d .
 ;; the command used for getting the proper directory-path
 ;; consider implementing file-name-sans-extension to check for filetype
 (defun directory-contains-filetype (filetype directory)
   (message "directory-contains-filetype")
   (message directory)
+  (message "after dir pritn")
   (let (ret-val
         dir-file-name
         is-file-p)
@@ -57,7 +60,7 @@
         (when (string= "zip" (file-name-extension dir-file-name))
           (message "we should now unzip")
           (let (dm-shellcommand)
-            (setq dm-shellcommand (format "bash /Users/olepetter/CodeFoo/lisp/projects/devilry-mode/unzip_to_current_folder.bash '%s'" (concat directory "/" dir-file-name)))
+            (setq dm-shellcommand (format "bash /Users/olepetter/CodeFoo/lisp/projects/devilry-mode/unzip_to_current_folder.bash '%s' '%s'" (concat directory "/" dir-file-name) directory))
             (message "The shell command -----")
             (message dm-shellcommand)
           (message "---- finished the shell command")
