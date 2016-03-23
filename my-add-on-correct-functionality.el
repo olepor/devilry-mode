@@ -16,6 +16,7 @@
 ;; only check the top buffer, after we've sorted, and excluded .-buffers
 (defun devilry-correct-student (directory)
   "Corrects the student associated with directory"
+  (unzip-if-zipfile-exists directory)
   (interactive "DDirectory to correct:")
   (message "The directory passed in is: %s" directory)
   (let ((current-files-and-attributes (directory-files-and-attributes directory t)))
@@ -23,26 +24,31 @@
     ;; takes advantage of the fact that devilry sorts in descending order,
     ;; so that no internal sorting is required
     (setq current-files-and-attributes (nreverse current-files-and-attributes))
-    (message (car (car current-files-and-attributes)))
-    (while (equal "." (substring (car (car current-files-and-attributes))-1))
-      (setq current-files-and-attributes (cdr current-files-and-attributes)))
-    (message (car (car current-files-and-attributes)))
-    ;; Now at the first non . file. Check if it's a dir
-    (if (directory-contains-filetype ".java" (car (car current-files-and-attributes)))
-        (cond
-         (t (message "in the right directory to correct files"))
-         (t (open-all-files-in-directory))
-         )
-      (message "there are no assignments here, we should move on deeper!")
-      (when (car (cdr (car current-files-and-attributes)))
-        (message "--- this is a proper directory")
-        (devilry-correct-student (car (car current-files-and-attributes))))
-      )))
+    (dolist (files current-files-and-attributes)
+      (let ((dir-path (car files))
+            (is-dir (car (cdr files))))
+            (unless (string= "." (substring dir-path 0 1))
+              (if (directory-contains-filetype ".java" dir-path)
+                  (cond
+                   (t (message "we are in the right dir to correct assignments"))
+                   (t (open-all-files-in-directory))
+                   )
+                (when is-dir
+                  ;; recurse
+                  (devilry-correct-student dir-path)
+            )))))))
 
-;; pwd | sed 's/ /\\ \\/g                                               '| sed 's/\=/\\=/' | sed 's/)/\\)/g'
-;; final command
-;; pwd | sed 's/ /\\ \\/g
-;;'| sed 's/\=/\\=/' | sed 's/)/\\)/g' | cd; unzip *.zip -d .
+(defun unzip-if-zipfile-exists (dir)
+  (let (filename
+        is-dir)
+    (dolist (dir-files-atts (directory-files-and-attributes dir))
+      (setq filename (car dir-files-atts))
+      (setq (is-dir (car (cdr dir-files-atts))))
+      (unless is-dir
+        (when (string= (file-name-extension filename) "zip")
+          (call-process-shell-command (format "bash /Users/olepetter/CodeFoo/lisp/projects/devilry-mode/unzip_to_current_folder.bash '%s' '%s'" (concat directory "/" dir-file-name) directory)))
+  ))))
+
 ;; the command used for getting the proper directory-path
 ;; consider implementing file-name-sans-extension to check for filetype
 (defun directory-contains-filetype (filetype directory)
@@ -57,21 +63,12 @@
       (setq dir-file-name (car dir/file))
       (setq is-file-p (car (cdr dir/file)))
       (unless (string= "." (substring dir-file-name 0 1))
-        (when (string= "zip" (file-name-extension dir-file-name))
-          (message "we should now unzip")
-          (let (dm-shellcommand)
-            (setq dm-shellcommand (format "bash /Users/olepetter/CodeFoo/lisp/projects/devilry-mode/unzip_to_current_folder.bash '%s' '%s'" (concat directory "/" dir-file-name) directory))
-            (message "The shell command -----")
-            (message dm-shellcommand)
-          (message "---- finished the shell command")
-          (call-process-shell-command dm-shellcommand nil (current-buffer) t)
-          (when (string= filetype (file-name-extension dir-file-name))
+        (when (string= filetype (file-name-extension dir-file-name))
           (setq ret-val t))
         ))
-        )
-      )
     )
   )
+
 
 
 
