@@ -1,4 +1,11 @@
 
+(defvar obligs-home-directory
+  "A pointer to the directory in which all assignments are downloaded")
+
+(defun set-obligs-home-directory (directory)
+  (interactive "DDirectory: ")
+  (setq obligs-home-directory directory))
+
 ;; TODO use the directory-files-and-attributes function to
 ;; see if we're really working with a directory, or a file :)
 (defun devilry-do-all-obligs(directory)
