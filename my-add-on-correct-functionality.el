@@ -3,7 +3,6 @@
   "A pointer to the directory in which all assignments are downloaded")
 
 (defun set-obligs-home-directory (directory)
-  (interactive "DDirectory: ")
   (setq obligs-home-directory directory))
 
 ;; TODO use the directory-files-and-attributes function to
@@ -23,8 +22,10 @@
 ;; only check the top buffer, after we've sorted, and excluded .-buffers
 (defun devilry-correct-student (directory)
   "Corrects the student associated with directory"
-  (unzip-if-zipfile-exists directory)
   (interactive "DDirectory to correct:")
+  (unless obligs-home-directory
+    (set-obligs-home-directory directory))
+  (unzip-if-zipfile-exists directory)
   (message "The directory passed in is: %s" directory)
   (let ((current-files-and-attributes (directory-files-and-attributes directory t)))
     ;; reverse the list, so that the last delivery is handled first.
@@ -34,47 +35,55 @@
     (dolist (files current-files-and-attributes)
       (let ((dir-path (car files))
             (is-dir (car (cdr files))))
-            (unless (string= "." (substring dir-path 0 1))
-              (if (directory-contains-filetype ".java" dir-path)
-                  (cond
-                   (t (message "we are in the right dir to correct assignments"))
-                   (t (open-all-files-in-directory))
-                   )
-                (when is-dir
-                  ;; recurse
-                  (devilry-correct-student dir-path)
-            )))))))
+        (message "dir-path %s" dir-path)
+        (unless (string= "." (substring dir-path 0 1))
+          (when is-dir
+            (if (directory-contains-filetype ".java" dir-path)
+                (cond
+                 (t (message "we are in the right dir to correct assignments"))
+                 (t (open-all-files-in-directory))
+                 )
+                ;; recurse
+                (devilry-correct-student dir-path)
+                )))))))
+
+(message "--------------")
 
 (defun unzip-if-zipfile-exists (dir)
-  (let (filename
-        is-dir)
+  (let (filename)
     (dolist (dir-files-atts (directory-files-and-attributes dir))
       (setq filename (car dir-files-atts))
-      (setq (is-dir (car (cdr dir-files-atts))))
-      (unless is-dir
+      (unless (car (cdr dir-files-atts)) ;; checks if this is a directory
         (when (string= (file-name-extension filename) "zip")
-          (call-process-shell-command (format "bash /Users/olepetter/CodeFoo/lisp/projects/devilry-mode/unzip_to_current_folder.bash '%s' '%s'" (concat directory "/" dir-file-name) directory)))
+          (call-process-shell-command (format "bash /Users/olepetter/CodeFoo/lisp/projects/devilry-mode/unzip_to_current_folder.bash '%s' '%s'" (concat directory "/" filename) directory)))
   ))))
+
+(defun test-directory-contains-filetype (directory)
+  (interactive "Ddir: ")
+  (if (directory-contains-filetype ".java" directory)
+      (message "Yay!")
+    (message "not working!!! grrr")))
+
+
 
 ;; the command used for getting the proper directory-path
 ;; consider implementing file-name-sans-extension to check for filetype
 (defun directory-contains-filetype (filetype directory)
   (message "directory-contains-filetype")
   (message directory)
-  (message "after dir pritn")
   (let (ret-val
         dir-file-name
         is-file-p)
-    (dolist (dir/file (directory-files-and-attributes directory) ret-val)
+    (dolist (dirfile (directory-files-and-attributes directory) ret-val)
       (message "in ze loop")
-      (setq dir-file-name (car dir/file))
-      (setq is-file-p (car (cdr dir/file)))
-      (unless (string= "." (substring dir-file-name 0 1))
-        (when (string= filetype (file-name-extension dir-file-name))
-          (setq ret-val t))
-        ))
+      (setq dir-file-name (car dirfile))
+      (setq is-file-p (not (car (cdr dirfile))))
+      (unless (not is-file-p)
+        (when (string= filetype (file-name-extension dir-file-name t))
+          (setq ret-val t)
+          ))
     )
-  )
+    ret-val))
 
 
 
