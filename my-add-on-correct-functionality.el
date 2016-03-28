@@ -26,6 +26,7 @@
   (interactive "Dset the devilry home directory: ")
   (unless default-directory
     (setq default-directory directory))
+  (setq dm-recursion-flag t)
   (devilry-correct-student directory))
 
 
@@ -45,22 +46,23 @@
       ;; so that no internal sorting is required
       (setq current-files-and-attributes (nreverse current-files-and-attributes))
       (dolist (files current-files-and-attributes)
-        (let ((dir-path (car files))
-              (is-dir (car (cdr files))))
-          (message "dir-path %s" dir-path)
-          (unless (string= "." (substring dir-path 0 1))
-            (when is-dir
-              (if (directory-contains-filetype ".java" dir-path)
-                  (progn
-                   (message "we are in the right dir to correct assignments")
-                   (setq dm-recursion-flag nil) ;; break the recursion at all levels
-                   (message "The recursion flag %S" dm-recursion-flag)
-                   (message "flag above")
-                   (open-all-files-in-directory)
-                   )
-                ;; recurse
-                (devilry-correct-student dir-path)
-                ))))))))
+        (when dm-recursion-flag
+          (let ((dir-path (car files))
+                (is-dir (car (cdr files))))
+            (message "dir-path %s" dir-path)
+            (unless (string= "." (substring dir-path 0 1))
+              (when is-dir
+                (if (directory-contains-filetype ".java" dir-path)
+                    (progn
+                      (message "we are in the right dir to correct assignments")
+                      (setq dm-recursion-flag nil) ;; break the recursion at all levels
+                      (message "The recursion flag %S" dm-recursion-flag)
+                      (message "flag above")
+                      (open-all-files-in-directory dir-path)
+                      )
+                  ;; recurse
+                  (devilry-correct-student dir-path)
+                  )))))))))
 
 (message "--------------")
 
@@ -108,20 +110,19 @@
 
 (message "-------")
 
-(defun open-all-files-in-directory()
+;; TODO can add a regex match to directory-files-and-attributes function
+(defun open-all-files-in-directory (directory)
   "Opens all files in current directory "
-  (let ((dir-files (directory-files-and-attributes ".")))
+  (let ((dir-files (directory-files-and-attributes directory t)))
     (dolist (f dir-files)
       (message (substring (car f) 0 1))
       (unless (eq "." (substring (car f) 0 1))
         (unless (car (cdr f))
           (message (car f))
-          (find-file (car f))))))
+          (find-file-read-only (car f))))))
    )
 
-(open-all-files-in-directory)
 
-(shell-command "unzip test.zip")
 (shell-command "cd ~/Downloads")
 
 
