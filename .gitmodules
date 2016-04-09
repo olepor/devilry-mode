@@ -1,0 +1,3 @@
+[submodule "Devilry_sort"]
+	path = Devilry_sort
+	url = git@github.com:gardir/Devilry_sort.git
