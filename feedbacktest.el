@@ -3,13 +3,7 @@
   (interactive "ffile: ")
   (let (
         (tmp-list (parse-input-to-lists input-file)))
-    (message "%d" (length tmp-list))
-    (message "%d" (length (car tmp-list)))
-    (message "%d" (length (car (cdr tmp-list))))
-    (dolist (inner-list tmp-list)
-      (dolist (text-object inner-list)
-        (message text-object)))))
-
+    nil))
 
 (defun parse-input-to-lists (input-file)
   (interactive "ffile: ")
@@ -22,7 +16,8 @@
     (setq good-list (make-list-recursively-from-regexp 0
                                                 "^+\\{3\\}\\(.*\\)$"
                                                 input-string))
-    (setq bad-list (make-list-recursively-from-regexp 0
+    (setq bad-list (make-list-recursively-from-regexp (string-match "^-" input-string
+                                                                    0)
                                                       "^-\\{3\\}\\(.*\\)$"
                                                       input-string))
     (list good-list bad-list)
@@ -31,11 +26,8 @@
 ;;; new beginning
 (defun make-list-recursively-from-regexp (start-pos regexp string)
   "returns a list of the matched substring atoms"
-  (let (
-        (matched-position (string-match regexp string start-pos)))
-    (when (integerp matched-position)
-      (message (substring string start-pos (match-end 0)))
-      (cons (substring string start-pos matched-position) (make-good-list-recursively matched-position regexp string)))))
+    (when (integerp (string-match regexp string start-pos))
+      (cons (substring string start-pos (match-end 0)) (make-list-recursively-from-regexp (match-end 0) regexp string))))
 
 
 (defun get-input-file-as-string (file-path)
