@@ -6,7 +6,7 @@
     nil))
 
 (defun parse-input-to-lists (input-file)
-  (interactive "ffile: ")
+  "Parses the input file into a list of positive, and less positive feedback"
   (let (
         (point-start (point))
         (point-end )
@@ -23,7 +23,6 @@
     (list good-list bad-list)
     ))
 
-;;; new beginning
 (defun make-list-recursively-from-regexp (start-pos regexp string)
   "returns a list of the matched substring atoms"
     (when (integerp (string-match regexp string start-pos))
@@ -31,7 +30,26 @@
 
 
 (defun get-input-file-as-string (file-path)
+  "Reads the input-file into a string"
   (interactive "ffile: ")
   (with-temp-buffer
     (insert-file-contents file-path)
     (buffer-string)))
+
+(delete-other-windows)
+(split-window-right)
+(other-window 1)
+(switch-to-buffer (generate-new-buffer "Hello"))
+
+
+(require 'widget)
+(eval-when-compile
+  (require 'wid-edit))
+
+(defun create-widget-for-testing ()
+  (interactive)
+  (switch-to-buffer "*test-text-widget")
+  (widget-create 'editable-field
+                 :size 13
+                 :format "lalalalalal"
+                 "Your name"))
