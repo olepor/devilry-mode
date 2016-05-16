@@ -30,13 +30,17 @@
     (t :inverse-video t))
   "Basic face for highlighting.")
 
-(defun dm-feedback-init
-    (message "Initialize feedback mode"))
+(defun dm-feedback-init ()
+  (interactive)
+  (message "Initialize feedback mode")
+  (find-file "oblign.feedback")
+  (highlight-regexp "^++.*" 'positive-feedback)
+  (highlight-regexp "^-+.*" 'negative-feedback))
 
-(defun feedback-add-to-feedback
+(defun feedback-add-to-feedback ()
     (message "Adding to feedback"))
 
-(defun feedback-dismiss-feedback
+(defun feedback-dismiss-feedback ()
     (message "Dismissing feedback"))
 
 (define-minor-mode devilry-feedback-mode
