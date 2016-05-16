@@ -43,13 +43,41 @@
 
 
 (require 'widget)
+(require 'button)
 (eval-when-compile
   (require 'wid-edit))
 
-(defun create-widget-for-testing ()
+
+(defface feedback-highlight-face
+  '((((class color) (background light)) :background "grey95")
+    (((class color) (background  dark)) :background "grey20"))
+  "Face for highlighting the current section."
+  )
+
+(defun test-widget-other-buffer ()
   (interactive)
   (switch-to-buffer "*test-text-widget")
+  (remove-overlays)
   (widget-create 'editable-field
                  :size 13
-                 :format "lalalalalal"
-                 "Your name"))
+                 :format "lalalalalallllalalalalallllalalalalallllalalalalallllalalalalallllalalalalallllalalalalallllalalalalallllalalalalallllalalalalallllalalalalallllalalalalallllalalalalallllalalalalallllalalalalallllalalalalallllalalalalallllalalalalallllalalalalallllalalalalallllalalalalallllalalalalallllalalalalallllalalalalallllalalalalallllalalalalallllalalalalallllalalalalallllalalalalallllalalalalalll"
+                 :face highlight
+                 :action (message "It's working")))
+
+
+(widget-create 'text
+               :format "hello there y'all"
+               :face feedback-highlight-face
+               :action (message "Well, there it is"))
+(insert-button "Well, what can I say?"
+               :face highlight
+               :action (message "hello there"))
+
+(widget-insert "Well" 'face 'highlight)
+
+(widget-create 'link
+               :button-prefix " "
+               :button-suffix " "
+               :button-face 'feedback-highlight-face
+               "Text")
+(insert-button )
