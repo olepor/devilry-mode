@@ -49,8 +49,8 @@
   :global t
   :init-value nil
   :keymap (let ((map (make-sparse-keymap)))
-            (define-key map (kbd "a") 'feedback-add-to-feedback)
-            (define-key map (kbd "s") 'feedback-dismiss-feedback)
+            (define-key map (kbd "<f5>") 'feedback-add-to-feedback)
+            (define-key map (kbd "<f6>") 'feedback-dismiss-feedback)
             map)
   (dm-feedback-init))
 
