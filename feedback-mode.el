@@ -38,10 +38,12 @@
   (highlight-regexp "^-+.*" 'negative-feedback))
 
 (defun feedback-add-to-feedback ()
-    (message "Adding to feedback"))
+  (interactive)
+  (message "Adding to feedback"))
 
 (defun feedback-dismiss-feedback ()
-    (message "Dismissing feedback"))
+  (interactive)
+  (message "Dismissing feedback"))
 
 (define-minor-mode devilry-feedback-mode
   nil
@@ -49,8 +51,8 @@
   :global t
   :init-value nil
   :keymap (let ((map (make-sparse-keymap)))
-            (define-key map (kbd "<f5>") 'feedback-add-to-feedback)
-            (define-key map (kbd "<f6>") 'feedback-dismiss-feedback)
+            (define-key map (kbd "<F5>") 'feedback-add-to-feedback)
+            (define-key map (kbd "<F6>") 'feedback-dismiss-feedback)
             map)
   (dm-feedback-init))
 
