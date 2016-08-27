@@ -1,9 +1,29 @@
+(load-file "devilry-mode.el")
+
+(defvar feedback-list (parse-input-to-lists "~/CodeFoo/projects/devilry-mode/oblign.feedback")
+  "the list all the feedback from the feedback file")
+
+(defvar feedback-file "~/CodeFoo/projects/devilry-mode/oblig-feedback.txt"
+  "The path to the feedback file")
+
+(define-key devilry-feedback-mode-map (kbd "<f5>") 'f-insert-to-feedback-file)
+
+;; Opens the feedback file, and activates the feedback mode
+(defun f-add-to-feedback-file ()
+  (interactive)
+  (find-file feedback-file)
+  (devilry-feedback-mode))
+
+(defun f-insert-to-feedback-file ()
+  (interactive)
+  (insert (caar feedback-list)))
 
 (defun print-good/bad-lists (input-file)
   (interactive "ffile: ")
   (let (
         (tmp-list (parse-input-to-lists input-file)))
-    nil))
+    (message (car (cdr tmp-list)))
+    tmp-list))
 
 (defun parse-input-to-lists (input-file)
   "Parses the input file into a list of positive, and less positive feedback"
