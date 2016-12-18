@@ -1,17 +1,25 @@
 (setq dm-source-dir (file-name-directory load-file-name))
 
+
 (defvar py-script-path "initial"
-  "The absolute path of the sort-scipt")
+  "The absolute path of the sort-script")
+
+(defvar python2-shell-alias "python2.7"
+  "The shell alias for your python2 version")
+
+(defvar devilry-delivery-directory "initial"
+  "The path to your downloaded devilry assignments")
+
+(defun set-devilry-delivery-directory (dir)
+  (interactive "Ddir: ")
+  (setq devilry-delivery-directory dir))
 
 (defun set-pyscript-path (directory)
   (interactive "Ddir: ")
   (setq py-script-path directory))
 
-(defun prepare-dir (directory)
-  (interactive "Ddir: ")
-  (cd directory)
-  (call-process-shell-command (concat "python " py-script-path (concat "sort_deliveries.py -b .") ) nil (current-buffer) nil directory))
-
+(defun run-devilry-sort-script ()
+  (shell-command (concat python2-shell-alias " " py-script-path (concat (concat "sort_deliveries.py -b ") devilry-delivery-directory))))
 
 ;; To tidy up a buffer, created by simenheg
 (defun tidy ()
