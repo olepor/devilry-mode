@@ -84,6 +84,17 @@
   ;;             '((sample-font-lock-keywords)))
   ;; (use-local-map devilry-feedback-map)
   (message "Activated")
+  ;; (dm-feedback-init)
+  ;; font-lock, used for highligting the text in the buffer
+  ;; (add-hook 'devilry-feedback-mode-hook
+  ;;           (lambda ()
+  ;;             (font-lock-add-keywords nil
+  ;;                                     '(("\\<\\(FIXME\\):" 1 'font-lock-warning-face prepend)
+  ;;                                       ("\\<\\(and\\|or\\|not\\)\\>" .
+  ;;                                        'font-lock-keyword-face)))))
+  (font-lock-add-keywords 'devilry-feedback-mode '(
+                                                   ("^++.*" . highlight)
+                                                   ("^--.*" . ahs-face)))
   ;; (highlight-regexp "^++.*" 'negative-feedback-face)
   ;; (setq-local font-lock-defaults '(devilry-feedback-mode-keyword-test))
   :lighter "Dev-Feed"
