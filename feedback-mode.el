@@ -62,9 +62,20 @@
     (modify-syntax-entry ?\n ">" table)
     table))
 
-(make-face 'font-lock-devilry-feedback-face)
-(set-face-foreground 'font-lock-devilry-feedback-face "pink")
-(set-face-background 'font-lock-devilry-feedback-face "blue")
+(defface dm-fb-font-lock-negative-face
+           '((((class color) (min-colors 88) (background light))
+              :background "red" :foreground "red")
+             (((class color) (min-colors 88) (background dark))
+              :background "green")
+             (((class color) (min-colors 16) (background light))
+              :background "darkseagreen2")
+             (((class color) (min-colors 16) (background dark))
+              :background "darkolivegreen")
+             (((class color) (min-colors 8))
+              :background "green" :foreground "black")
+             (t :inverse-video t))
+           "Basic face for highlighting."
+           :group 'basic-faces)
 
 (defvar devilry-feedback-mode-keyword-test
   '(("solid" . highlight)
@@ -76,7 +87,7 @@
   (message "Hello there"))
 
 ;;;###autoload
-(define-derived-mode devilry-feedback-mode nil "Devilry-feedback"
+(define-derived-mode devilry-feedback-mode text-mode "Devilry-feedback"
   "A simple major mode which helps automating student feedback
 \\{devilry-feedback-mode-map}"
   ;; :syntax-table my-devilry-mode-syntax-table
@@ -93,8 +104,8 @@
   ;;                                       ("\\<\\(and\\|or\\|not\\)\\>" .
   ;;                                        'font-lock-keyword-face)))))
   (font-lock-add-keywords 'devilry-feedback-mode '(
-                                                   ("^++.*" . highlight)
-                                                   ("^--.*" . ahs-face)))
+                                                   ("^++.*" . font-lock-comment-delimiter-face)
+                                                   ("^--.*" . font-lock-warning-face)))
   ;; (highlight-regexp "^++.*" 'negative-feedback-face)
   ;; (setq-local font-lock-defaults '(devilry-feedback-mode-keyword-test))
   :lighter "Dev-Feed"
