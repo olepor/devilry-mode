@@ -1,8 +1,12 @@
+;; Beginning of feedback.el
+;; A simple minor(major?) mode for more efficient feedbacks on deliveries
+;; Author - Ole P. Orhagen
+
 (defun dm-feedback-init ()
   (interactive)
   (message "Initialize feedback mode")
   (find-file "oblign.feedback")
-  (highlight-regexp "^++.*" 'highlight)
+  (highlight-regexp "^++.*" 'ahs-face)
   (highlight-regexp "^-+.*" 'highlight))
 
 (defun feedback-add-to-feedback ()
